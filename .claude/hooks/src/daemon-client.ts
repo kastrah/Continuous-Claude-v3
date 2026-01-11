@@ -41,10 +41,11 @@ export interface DaemonQuery {
   // New fields for tree, structure, context, imports, importers
   extensions?: string[];
   exclude_hidden?: boolean;
-  max_results?: number;
   entry?: string;
   depth?: number;
   module?: string;
+  // Session tracking for token stats (P7)
+  session?: string;
 }
 
 /**
@@ -75,6 +76,20 @@ export interface DaemonResponse {
     severity: 'error' | 'warning';
     source: 'pyright' | 'ruff' | 'tsc' | 'eslint';
   }>;
+  // Session stats (P7)
+  session_stats?: {
+    session_id: string;
+    raw_tokens: number;
+    tldr_tokens: number;
+    requests: number;
+    savings_percent: number;
+  };
+  all_sessions?: {
+    active_sessions: number;
+    total_raw_tokens: number;
+    total_tldr_tokens: number;
+    total_requests: number;
+  };
 }
 
 /**

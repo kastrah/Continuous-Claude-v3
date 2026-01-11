@@ -199,7 +199,8 @@ function getTldrContext(
   filePath: string,
   language: string,
   layers: string[] = ['ast', 'call_graph'],
-  target: string | null = null
+  target: string | null = null,
+  sessionId: string | null = null
 ): string | null {
   const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
   const fileName = basename(filePath);
@@ -212,8 +213,12 @@ function getTldrContext(
     results.push('');
 
     // L1/L2: Extract file info (AST + Call Graph) using daemon
+    // Pass session ID for token tracking (P7)
     if (layers.includes('ast') || layers.includes('call_graph')) {
-      const extractResp = queryDaemonSync({ cmd: 'extract', file: filePath }, projectDir);
+      const extractResp = queryDaemonSync(
+        { cmd: 'extract', file: filePath, session: sessionId || undefined },
+        projectDir
+      );
 
       if (extractResp.status === 'ok' && extractResp.result) {
         const info = extractResp.result;
@@ -403,7 +408,7 @@ async function main() {
     }
   }
 
-  const tldrContext = getTldrContext(filePath, language, layers, target);
+  const tldrContext = getTldrContext(filePath, language, layers, target, input.session_id);
 
   if (!tldrContext) {
     // TLDR failed, allow normal read

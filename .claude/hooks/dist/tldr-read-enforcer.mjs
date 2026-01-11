@@ -301,7 +301,7 @@ function detectLanguage(filePath) {
   };
   return langMap[ext] || "python";
 }
-function getTldrContext(filePath, language, layers = ["ast", "call_graph"], target = null) {
+function getTldrContext(filePath, language, layers = ["ast", "call_graph"], target = null, sessionId = null) {
   const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
   const fileName = basename(filePath);
   const results = [];
@@ -310,7 +310,10 @@ function getTldrContext(filePath, language, layers = ["ast", "call_graph"], targ
     results.push(`Language: ${language}`);
     results.push("");
     if (layers.includes("ast") || layers.includes("call_graph")) {
-      const extractResp = queryDaemonSync({ cmd: "extract", file: filePath }, projectDir);
+      const extractResp = queryDaemonSync(
+        { cmd: "extract", file: filePath, session: sessionId || void 0 },
+        projectDir
+      );
       if (extractResp.status === "ok" && extractResp.result) {
         const info = extractResp.result;
         if (info.functions && info.functions.length > 0) {
@@ -461,7 +464,7 @@ async function main() {
       contextSource = transcriptIntent.source;
     }
   }
-  const tldrContext = getTldrContext(filePath, language, layers, target);
+  const tldrContext = getTldrContext(filePath, language, layers, target, input.session_id);
   if (!tldrContext) {
     console.log("{}");
     return;

@@ -787,7 +787,7 @@ async def run_setup_wizard() -> None:
     elif "bash" in shell:
         shell_config = Path.home() / ".bashrc"
 
-    opc_dir = Path.cwd()  # wizard runs from opc/
+    opc_dir = _project_root  # Use script location, not cwd (robust if invoked from elsewhere)
     if shell_config and shell_config.exists():
         content = shell_config.read_text()
         export_line = f'export CLAUDE_OPC_DIR="{opc_dir}"'
@@ -798,10 +798,10 @@ async def run_setup_wizard() -> None:
         else:
             console.print(f"  [dim]CLAUDE_OPC_DIR already in {shell_config.name}[/dim]")
     elif sys.platform == "win32":
-        console.print(f"  [yellow]NOTE[/yellow] Add to your environment:")
+        console.print("  [yellow]NOTE[/yellow] Add to your environment:")
         console.print(f'       set CLAUDE_OPC_DIR="{opc_dir}"')
     else:
-        console.print(f"  [yellow]NOTE[/yellow] Add to your shell config:")
+        console.print("  [yellow]NOTE[/yellow] Add to your shell config:")
         console.print(f'       export CLAUDE_OPC_DIR="{opc_dir}"')
 
     # Step 8: Math Features (Optional)

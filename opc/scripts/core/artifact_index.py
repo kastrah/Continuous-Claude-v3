@@ -652,6 +652,9 @@ def index_handoffs(conn, base_path: Path = Path("thoughts/shared/handoffs")):
     # Index YAML handoffs (both .yaml and .yml extensions)
     for extension in ["*.yaml", "*.yml"]:
         for handoff_file in base_path.rglob(extension):
+            # Only process files in handoffs directories (skip orchestration.yaml, etc.)
+            if "handoffs" not in str(handoff_file):
+                continue
             try:
                 data = parse_handoff_yaml(handoff_file)
                 db_execute(

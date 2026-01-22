@@ -206,14 +206,14 @@ def analyze_conflicts(
         else:
             report.mergeable_rules.append(rule.name)
 
-    # Get OPC MCP names from settings.json
-    opc_settings_path = opc_source / "settings.json"
+    # Get OPC MCP names from mcp_config.json (not settings.json)
+    opc_mcp_config_path = opc_source / "mcp_config.json"
     opc_mcp_names = set()
-    if opc_settings_path.exists():
+    if opc_mcp_config_path.exists():
         try:
-            opc_settings = json.loads(opc_settings_path.read_text())
-            if "mcpServers" in opc_settings:
-                opc_mcp_names = set(opc_settings["mcpServers"].keys())
+            opc_mcp_config = json.loads(opc_mcp_config_path.read_text())
+            if "mcpServers" in opc_mcp_config:
+                opc_mcp_names = set(opc_mcp_config["mcpServers"].keys())
         except (json.JSONDecodeError, OSError):
             pass
 
